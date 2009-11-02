@@ -1,0 +1,2 @@
+- options for colorless output and version
+- small daemon to inform about tasks that have passed the deadline
