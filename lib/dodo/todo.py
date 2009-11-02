@@ -248,6 +248,6 @@ class Todo:
             if changes:
                 parserGenerator.generate(tasks)
 
-        except (CommandParseError, TodoError, IOError) as err:
+        except (TodoError, IOError) as err:
             print('error: {0}'.format(err))
 
