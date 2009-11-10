@@ -23,8 +23,11 @@ class CommandParser:
         """
         if not argv:
             cmd = self.commands[0]
+
         elif argv[0] not in self.commands:
             raise ValueError('command not recognized')
+
         else:
             cmd = argv[0]
+
         return cmd, argv[1:]

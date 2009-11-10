@@ -29,14 +29,11 @@ class Termcap:
     def set_fg_colors(self):
         if tigetstr('setaf'):
             for i, color in enumerate(ansi_colors):
-                setattr(self,
-                        color,
-                        tparm(tigetstr('setaf'), i))
+                setattr(self, color, tparm(tigetstr('setaf'), i))
+
         elif curses.tigetstr('setf'):
             for i, color in enumerate(colors):
-                setattr(self,
-                        color,
-                        tparm(tigetstr('setf'), i))
+                setattr(self, color, tparm(tigetstr('setf'), i))
 
     def _init_meta_caps(self):
         for cap in meta_caps:
@@ -45,10 +42,14 @@ class Termcap:
     def set_meta_caps(self):
         for cap in meta_caps:
             param = ''
+
             if cap['type'] == 'str':
                 param = tigetstr(cap['cap']) or ''
+
             elif cap['type'] == 'int':
                 param = tigetnum(cap['cap']) or ''
+
             elif cap['type'] == 'bool':
                 param = tigetflag(cap['cap']) or ''
+
             setattr(self, cap['name'], param)

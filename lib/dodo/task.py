@@ -35,25 +35,23 @@ class Task:
 
     def colorize(self, string):
         color = ''
+
         if self.deadline and self.deadline <= date.today():
             color = Task.color_late
+
         elif self.pri == Task.task_done:
             color = Task.color_done
+
         else:
-            color = Task.color_priorities[
-                ord(self.pri) - Task.capital_a_index
-                ]
+            color = Task.color_priorities[ord(self.pri) - Task.capital_a_index]
+
         return color + string + Task.color_reset
 
     def get_pretty(self, regex=None):
-        if regex:
-            if not regex.match(self.desc):
-                return
+        if regex and not regex.match(self.desc):
+            return
 
-        string = '  {0}: {1}'.format(
-            self.index,
-            self.desc
-            )
+        string = '  {0}: {1}'.format(self.index, self.desc)
 
         if self.done:
             string += ' ={0}'.format(self.done)
@@ -74,11 +72,9 @@ class Project:
         self.tasks.append(task)
 
     def colorize(self, string):
-        return '{0}{1}{2}'.format(
-            Project.color_project,
-            string,
-            Project.color_reset
-            )
+        return '{0}{1}{2}'.format(Project.color_project,
+                                  string,
+                                  Project.color_reset)
 
     def get_pretty_name(self):
         return self.colorize('@{0}'.format(self.name))
@@ -99,13 +95,11 @@ class Project:
 
         if string:
             string = string[:-1] # remove linefeed
-            return '{0}\n{1}'.format(
-                self.get_pretty_name(),
-                string
-                )
+            return '{0}\n{1}'.format(self.get_pretty_name(), string)
 
     def get_done(self, remove=False):
         done = []
+
         for task in self.tasks:
             if task.done:
                 done.append(task)

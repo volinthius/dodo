@@ -20,6 +20,7 @@ class TodoError(Exception):
     """
     def __init__(self, value):
         self.value = value
+
     def __str__(self):
         return self.value
 
@@ -50,9 +51,9 @@ class Todo:
         def __find_task_or_project(self, tasks, what):
             if what.startswith('@'):
                 for task in tasks:
-                    if isinstance(task, Project) and \
-                            task.name == what[1:]:
+                    if isinstance(task, Project) and task.name == what[1:]:
                         return task
+
             else:
                 what = int(what)
                 for task in tasks:
@@ -97,28 +98,25 @@ class Todo:
                     raise TodoError('insufficient arguments')
 
                 task = self.__find_task_or_project(self.tasks, args[0])
+
                 if task:
-                    task.append(
-                        Task(self.last_index,
-                             ' '.join(args[1:]))
-                        )
+                    task.append(Task(self.last_index, ' '.join(args[1:])))
                     return True
+
                 else:
                     project = Project(args[0][1:])
-                    project.append(
-                        Task(self.last_index,
-                             ' '.join(args[1:]))
-                        )
+                    project.append(Task(self.last_index, ' '.join(args[1:])))
+
                     self.tasks.append(project)
                     self.last_index += 1
+
                     return True
+
             # handle task
             else:
-                self.tasks.append(Task(
-                        self.last_index,
-                        ' '.join(args),
-                        ))
+                self.tasks.append(Task(self.last_index, ' '.join(args)))
                 self.last_index += 1
+
                 return True
 
         def rm(self, args):
@@ -167,8 +165,10 @@ class Todo:
                 if isinstance(task, Project):
                     for project_task in task.tasks:
                         project_task.deadline = deadline
+
                 else:
                     task.deadline = deadline
+
                 return True
 
         def pri(self, args):
@@ -186,8 +186,10 @@ class Todo:
                 if isinstance(task, Project):
                     for project_task in task.tasks:
                         project_task.pri = new_pri
+
                 else:
                     task.pri = new_pri
+
                 return True
 
         def do(self, args):
@@ -202,14 +204,17 @@ class Todo:
                     for project_task in task.tasks:
                         project_task.pri = Task.task_done
                         project_task.done = date.today()
+
                 else:
                     task.pri = Task.task_done
                     task.done = date.today()
+
                 return True
 
         def archive(self, args):
             archived = []
             project = None
+
             for task in self.tasks:
                 if isinstance(task, Project):
                     archived_project = None
@@ -226,27 +231,26 @@ class Todo:
             if archived:
                 date = datetime.now().isoformat()
                 name = _archive_tmpl + '_' + date
-                with file(name, 'w') as f:
-                    pass
+
+                with file(name, 'w') as f: pass
+
                 parserGenerator = TaskParserGenerator(name)
                 parserGenerator.generate(archived)
+
                 return True
 
         def help(self, args):
-            print('usage: {0} [COMMAND] [OPTS]'.format(
-                    tool_name,
-                    )
-                  )
+            print('usage: {0} [COMMAND] [OPTS]'.format(tool_name))
+
             for cmd in Todo.cmds:
-                print('  {0}\t\t{1}'.format(
-                        cmd[0],
-                        ' '.join(cmd[1:])
-                        ))
+                print('  {0}\t\t{1}'.format(cmd[0], ' '.join(cmd[1:])))
+
             sys.exit(0)
 
     def __init__(self, args=[]):
         if not os.path.exists(os.path.dirname(_todo_file)):
             os.mkdir(os.path.dirname(_todo_file))
+
         if not os.path.exists(_todo_file):
             with file(_todo_file, 'w') as f: pass
 
@@ -265,4 +269,3 @@ class Todo:
 
         except (TodoError, IOError) as err:
             print('error: {0}'.format(err))
-

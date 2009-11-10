@@ -35,20 +35,16 @@ class TaskParserGenerator:
                     # projectless tasks
                     if not project:
                         index += 1
-                        tasks.append(
-                            Task(index, desc, pri,
-                                 dl if dl != '-' else None,
-                                 done if done != '-' else None)
-                            )
+                        tasks.append(Task(index, desc, pri,
+                                          dl if dl != '-' else None,
+                                          done if done != '-' else None))
 
                     # tasks in projects
                     else:
                         index += 1
-                        project.append(
-                            Task(index, desc, pri,
-                                 dl if dl != '-' else None,
-                                 done if done != '-' else None)
-                            )
+                        project.append(Task(index, desc, pri,
+                                            dl if dl != '-' else None,
+                                            done if done != '-' else None))
 
             if project: tasks.append(project)
 
