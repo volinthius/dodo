@@ -88,8 +88,14 @@ class Todo:
                     print('{0}'.format(task.get_pretty()))
 
         def add(self, args):
+            if len(args) < 1:
+                raise TodoError('insufficient arguments')
+
             # handle project
             if args[0].startswith('@'):
+                if len(args) < 2:
+                    raise TodoError('insufficient arguments')
+
                 task = self.__find_task_or_project(self.tasks, args[0])
                 if task:
                     task.append(
@@ -116,31 +122,36 @@ class Todo:
                 return True
 
         def rm(self, args):
-            first_arg = args[0]
-            if first_arg.startswith('@'):
-                for task in self.tasks:
-                    if isinstance(task, Project) and \
-                            task.name == first_arg[1:]:
-                        self.tasks.remove(task)
-                        return True
+            if len(args) < 1:
+                raise TodoError('insufficient arguments')
+
+            if args[0].startswith('@'):
+                task = self.__find_task_or_project(self.tasks, args[0][1:])
+                if task:
+                    self.tasks.remove(task)
+
             else:
-                first_arg = int(args[0])
+                index = int(args[0])
+
                 for task in self.tasks:
                     if isinstance(task, Project):
                         for project_task in task.tasks:
-                            if project_task.index == first_arg:
+                            if project_task.index == index:
                                 task.tasks.remove(project_task)
                                 if len(task.tasks) == 0:
                                     self.tasks.remove(task)
                                 return True
 
-                    elif task.index == first_arg:
+                    elif task.index == index:
                         self.tasks.remove(task)
                         return True
 
-            raise TodoError("index or project not found: {0}".format(first_arg))
+            raise TodoError("index or project not found: {0}".format(args[0]))
 
         def dl(self, args):
+            if len(args) < 2:
+                raise TodoError('insufficient arguments')
+
             first_arg = args[0]
             deadline = args[1]
 
@@ -162,7 +173,8 @@ class Todo:
 
         def pri(self, args):
             if len(args) < 2:
-                self.help(args)
+                raise TodoError('insufficient arguments')
+
             first_arg = args[0]
             new_pri = args[1].upper()
 
@@ -179,6 +191,9 @@ class Todo:
                 return True
 
         def do(self, args):
+            if len(args) < 1:
+                raise TodoError('insufficient arguments')
+
             first_arg = args[0]
 
             task = self.__find_task_or_project(self.tasks, first_arg)
