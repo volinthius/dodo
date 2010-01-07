@@ -124,9 +124,10 @@ class Todo:
                 raise TodoError('insufficient arguments')
 
             if args[0].startswith('@'):
-                task = self.__find_task_or_project(self.tasks, args[0][1:])
+                task = self.__find_task_or_project(self.tasks, args[0])
                 if task:
                     self.tasks.remove(task)
+                    return True
 
             else:
                 index = int(args[0])
