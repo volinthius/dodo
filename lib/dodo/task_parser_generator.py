@@ -65,7 +65,8 @@ class TaskParserGenerator:
                             task.desc
                             ))
 
-                elif isinstance(task, Project):
+            for task in tasks:
+                if isinstance(task, Project):
                     fobj.write('@{0}\n'.format(task.name))
                     for project_task in task.tasks:
                         fobj.write('{0} {1} {2} {3}\n'.format(
