@@ -6,6 +6,19 @@ from termcap import Termcap
 
 term = Termcap()
 
+def compare_tasks(task_a, task_b):
+    if task_a.done and not task_b.done:
+        return 1
+    elif not task_a.done and task_b.done:
+        return -1
+
+    if task_a.pri > task_b.pri:
+        return 1
+    elif task_a.pri == task_b.pri:
+        return 0
+    else:
+        return -1
+
 class Task:
     priorities = ( 'A', 'B', 'C' )
     task_done = 'x'
@@ -107,3 +120,6 @@ class Project:
                     self.tasks.remove(task)
 
         return done
+
+    def sort_tasks(self, field='pri'):
+        self.tasks.sort(compare_tasks)

@@ -67,6 +67,7 @@ class TaskParserGenerator:
 
             for task in tasks:
                 if isinstance(task, Project):
+                    task.sort_tasks()
                     fobj.write('@{0}\n'.format(task.name))
                     for project_task in task.tasks:
                         fobj.write('{0} {1} {2} {3}\n'.format(
