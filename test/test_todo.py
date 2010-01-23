@@ -21,7 +21,7 @@ todo_content_complex = ( "$version 1",
                          "B - - test-task-2",
                          "@test-project-1",
                          "C - - test-task-3",
-                         "A - - test-task-4",
+                         "B - - test-task-4",
                          "@test-project-2",
                          "B - - test-task-5" )
 
@@ -90,7 +90,30 @@ def test_todo_ls_project():
 
 @with_setup(setup, teardown)
 def test_todo_pri():
-    raise SkipTest()
+    tmp = mktmpdir()
+
+    todofile = os.path.join(tmp, 'todo')
+    with file(todofile, 'w') as fobj:
+        fobj.write('\n'.join(todo_content_complex))
+
+    parsergenerator = TaskParserGenerator(todofile)
+    tasks, lastindex = parsergenerator.parse()
+    todo = Todo.TodoCommands(tasks, lastindex)
+
+    todo.pri(['@test-project-1', "A"])
+    parsergenerator.generate(tasks)
+
+    with file(todofile) as fobj:
+        want = ( "$version 1",
+                 "A - - test-task-1",
+                 "B - - test-task-2",
+                 "@test-project-1",
+                 "A - - test-task-3",
+                 "A - - test-task-4",
+                 "@test-project-2",
+                 "B - - test-task-5")
+        result = fobj.read()
+        assert result == '\n'.join(want) + '\n'
 
 @with_setup(setup, teardown)
 def test_todo_rm():
