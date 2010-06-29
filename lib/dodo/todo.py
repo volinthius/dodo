@@ -13,6 +13,7 @@ from command_parser import CommandParser
 tool_name = "dodo"
 _todo_file = os.path.join(os.getenv('HOME'), '.dodo', 'todo')
 _archive_tmpl = os.path.join(os.getenv('HOME'), '.dodo', 'archive')
+_version_file = os.path.join(os.path.dirname(__file__), '.version')
 
 class TodoError(Exception):
     """
@@ -40,6 +41,7 @@ class Todo:
         ( 'dl', 'INDEX | @PROJECT', 'DATE' ),
         ( 'do', 'INDEX | @PROJECT', ),
         ( 'archive', ),
+        ( 'version', ),
         ( 'help', ),
         )
 
@@ -247,6 +249,10 @@ class Todo:
                 print('  {0}\t\t{1}'.format(cmd[0], ' '.join(cmd[1:])))
 
             sys.exit(0)
+
+        def version(self, args):
+            with file(_version_file, 'r') as fobj:
+                print fobj.read()
 
     def __init__(self, args=[]):
         if not os.path.exists(os.path.dirname(_todo_file)):
