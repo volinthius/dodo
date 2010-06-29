@@ -10,6 +10,9 @@ dodo was inspired by todo.txt_.
 
 .. _todo.txt: http://ginatrapani.github.com/todo.txt-cli
 
+dodo is distributed under MIT license. See LICENSE file for complete
+terms.
+
 Dependencies
 ------------
 
