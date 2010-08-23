@@ -31,13 +31,18 @@ def setup():
 def teardown():
     pass
 
+def create_todo_file(tempdir, content):
+    todo_file = os.path.join(tempdir, 'todo')
+    with file(todo_file, 'w') as f:
+        f.write('\n'.join(content))
+
+    return todo_file
+
 @with_setup(setup, teardown)
 def test_todo_ls():
     tmp = mktmpdir()
 
-    todo_file = os.path.join(tmp, 'todo')
-    with file(todo_file, 'w') as f:
-        f.write('\n'.join(todo_content_complex))
+    todo_file = create_todo_file(tmp, todo_content_complex)
 
     tasks, last_index = TaskParserGenerator(todo_file).parse()
     todo = Todo.TodoCommands(tasks, last_index)
@@ -65,9 +70,7 @@ def test_todo_ls():
 def test_todo_ls_project():
     tmp = mktmpdir()
 
-    todo_file = os.path.join(tmp, 'todo')
-    with file(todo_file, 'w') as f:
-        f.write('\n'.join(todo_content_complex))
+    todo_file = create_todo_file(tmp, todo_content_complex)
 
     tasks, last_index = TaskParserGenerator(todo_file).parse()
     todo = Todo.TodoCommands(tasks, last_index)
@@ -92,9 +95,7 @@ def test_todo_ls_project():
 def test_todo_pri():
     tmp = mktmpdir()
 
-    todofile = os.path.join(tmp, 'todo')
-    with file(todofile, 'w') as fobj:
-        fobj.write('\n'.join(todo_content_complex))
+    todofile = create_todo_file(tmp, todo_content_complex)
 
     parsergenerator = TaskParserGenerator(todofile)
     tasks, lastindex = parsergenerator.parse()
@@ -128,8 +129,60 @@ def test_todo_help():
     raise SkipTest()
 
 @with_setup(setup, teardown)
-def test_todo_add():
-    raise SkipTest()
+def test_todo_add_to_existing_project():
+    tmp = mktmpdir()
+
+    todofile = create_todo_file(tmp, todo_content_complex)
+
+    parsergenerator = TaskParserGenerator(todofile)
+    tasks, lastindex = parsergenerator.parse()
+    todo = Todo.TodoCommands(tasks, lastindex)
+
+    todo.add(('@test-project-1', 'hello there world'))
+    parsergenerator.generate(tasks)
+
+    with file(todofile) as fobj:
+        want = ( "$version 1",
+                 "A - - test-task-1",
+                 "B - - test-task-2",
+                 "@test-project-1",
+                 "B - - test-task-4",
+                 "C - - test-task-3",
+                 "C - - hello there world",
+                 "@test-project-2",
+                 "B - - test-task-5")
+        result = fobj.read()
+        assert result == '\n'.join(want) + '\n'
+
+
+@with_setup(setup, teardown)
+def test_todo_add_to_new_project():
+    tmp = mktmpdir()
+
+    todofile = create_todo_file(tmp, todo_content_complex)
+
+    parsergenerator = TaskParserGenerator(todofile)
+    tasks, lastindex = parsergenerator.parse()
+    todo = Todo.TodoCommands(tasks, lastindex)
+
+    todo.add(('@test-project-3', 'hello there world'))
+    parsergenerator.generate(tasks)
+
+    with file(todofile) as fobj:
+        want = ( "$version 1",
+                 "A - - test-task-1",
+                 "B - - test-task-2",
+                 "@test-project-1",
+                 "B - - test-task-4",
+                 "C - - test-task-3",
+                 "@test-project-2",
+                 "B - - test-task-5",
+                 "@test-project-3",
+                 "C - - hello there world"
+                 )
+        result = fobj.read()
+        assert result == '\n'.join(want) + '\n'
+
 
 @with_setup(setup, teardown)
 def test_todo_dl():
