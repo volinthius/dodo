@@ -7,13 +7,13 @@ class CommandParser:
     values.
     """
 
-    def __init__(self, commands=[]):
+    def __init__(self, commands):
         """
         Initializes parser with commands.
         """
         self.commands = commands
         
-    def parse(self, argv=[]):
+    def parse(self, argv):
         """
         Parses command from list and if command is found returns it
         along with the arguments left. First command is returned if no

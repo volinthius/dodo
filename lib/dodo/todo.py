@@ -275,7 +275,7 @@ class Todo:
             with file(_version_file, 'r') as fobj:
                 print fobj.read()
 
-    def __init__(self, args=[]):
+    def __init__(self, args):
         if not os.path.exists(os.path.dirname(_todo_file)):
             os.mkdir(os.path.dirname(_todo_file))
 
