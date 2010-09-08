@@ -33,16 +33,18 @@ class Todo:
     None.
     """
 
+    # ( help, command, options, ... )
     cmds = (
-        ( 'ls', '[@PROJECT]' ),
-        ( 'add', '[@PROJECT]', 'DESC' ),
-        ( 'rm', 'INDEX | @PROJECT', ),
-        ( 'pri', 'INDEX | @PROJECT', 'PRIORITY', ),
-        ( 'dl', 'INDEX | @PROJECT', 'DATE' ),
-        ( 'do', 'INDEX | @PROJECT', ),
-        ( 'archive', ),
-        ( 'version', ),
-        ( 'help', ),
+        ( 'List tasks', 'ls', '[@PROJECT]' ),
+        ( 'Add new task', 'add', '[@PROJECT]', 'DESC' ),
+        ( 'Remove task', 'rm', 'INDEX | @PROJECT' ),
+        ( 'Change priority of a task', 'pri', 'INDEX | @PROJECT', 'PRIORITY' ),
+        ( 'Add deadline to a task', 'dl', 'INDEX | @PROJECT', 'DATE' ),
+        ( 'Do a task', 'do', 'INDEX | @PROJECT' ),
+        ( 'Archive old tasks', 'archive' ),
+        ( 'Print program version', 'version' ),
+        ( 'Show projects', 'projects' ),
+        ( 'Show help', 'help' ),
         )
 
     class TodoCommands():
@@ -253,8 +255,19 @@ class Todo:
         def help(self, args):
             print('usage: {0} [COMMAND] [OPTS]'.format(tool_name))
 
+            cmd_width = max(map(len, [cmd[1] for cmd in Todo.cmds]))
+            opt_width = max(map(len, [' '.join(cmd[2:]) for cmd in Todo.cmds]))
+
             for cmd in Todo.cmds:
-                print('  {0}\t\t{1}'.format(cmd[0], ' '.join(cmd[1:])))
+                print(
+                    '  {0:<{cmd_width}}{1:<{opt_width}}{2}'.format(
+                        cmd[1],
+                        ' '.join(cmd[2:]),
+                        cmd[0],
+                        cmd_width = cmd_width + 5,
+                        opt_width = opt_width + 5,
+                        )
+                    )
 
             sys.exit(0)
 
@@ -273,7 +286,7 @@ class Todo:
             parserGenerator = TaskParserGenerator(_todo_file)
             tasks, last_index = parserGenerator.parse()
 
-            commandParser = CommandParser([ cmd[0] for cmd in Todo.cmds ])
+            commandParser = CommandParser([ cmd[1] for cmd in Todo.cmds ])
             command, args_left = commandParser.parse(args)
 
             changes = getattr(Todo.TodoCommands(tasks, last_index),
