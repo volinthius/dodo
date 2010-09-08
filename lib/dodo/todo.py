@@ -90,6 +90,14 @@ class Todo:
                 for task in self.tasks:
                     print('{0}'.format(task.get_pretty()))
 
+        def projects(self, args):
+            if not self.tasks:
+                return
+
+            for task in self.tasks:
+                if isinstance(task, Project):
+                    print('{0}'.format(task.get_pretty_name()))
+
         def add(self, args):
             if len(args) < 1:
                 raise TodoError('insufficient arguments')
