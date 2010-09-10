@@ -45,6 +45,7 @@ class Todo:
         ( 'Print program version', 'version' ),
         ( 'Show projects', 'projects' ),
         ( 'Show help', 'help' ),
+        ( 'List commands only', 'commands' )
         )
 
     class TodoCommands():
@@ -69,6 +70,10 @@ class Todo:
                         return task
 
             return None
+
+        def commands(self, args):
+            for cmd in Todo.cmds:
+                print cmd[1]
 
         def ls(self, args):
             if not self.tasks:
