@@ -60,7 +60,7 @@ class Task:
 
         return color + string + Task.color_reset
 
-    def get_pretty(self, regex=None):
+    def get_pretty(self, regex=None, no_color=False):
         if regex and not regex.match(self.desc):
             return
 
@@ -71,7 +71,10 @@ class Task:
         if self.deadline:
             string += ' >{0}'.format(self.deadline)
 
-        return self.colorize(string)
+        if no_color:
+            return string
+        else:
+            return self.colorize(string)
 
 class Project:
     color_project = term.yellow
@@ -89,10 +92,13 @@ class Project:
                                   string,
                                   Project.color_reset)
 
-    def get_pretty_name(self):
-        return self.colorize('@{0}'.format(self.name))
+    def get_pretty_name(self, no_color=False):
+        if no_color:
+            return '@{0}'.format(self.name)
+        else:
+            return self.colorize('@{0}'.format(self.name))
 
-    def get_pretty(self, regex=None):
+    def get_pretty(self, regex=None, no_color=True):
         found = False
         string = ''
 
@@ -104,11 +110,16 @@ class Project:
             if regex and not regex.match(task.desc):
                 continue
             found = True
-            string += '{0}\n'.format(task.get_pretty(regex))
+            string += '{0}\n'.format(
+                task.get_pretty(regex, no_color = no_color)
+                )
 
         if string:
             string = string[:-1] # remove linefeed
-            return '{0}\n{1}'.format(self.get_pretty_name(), string)
+            return '{0}\n{1}'.format(
+                self.get_pretty_name(no_color=no_color),
+                string
+                )
 
     def get_done(self, remove=False):
         done = []

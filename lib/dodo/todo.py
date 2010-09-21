@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import copy
+from optparse import OptionParser
 
 from datetime import datetime,date
 
@@ -48,6 +49,14 @@ class Todo:
         ( 'List commands only', 'commands' )
         )
 
+    opts = (
+        ( "Don't print colors",
+          "store_true",
+          "no_colors",
+          False,
+          "--no-colors" ),
+        )
+
     class TodoCommands():
         def __init__(self, tasks, last_index):
             self.tasks = tasks
@@ -83,19 +92,22 @@ class Todo:
             if len(args) > 0 and args[0].startswith('@'):
                 project = self.__find_task_or_project(self.tasks, args[0])
                 if project:
-                    print(project.get_pretty())
+                    print(project.get_pretty(no_color = Todo.no_colors))
 
             # list tasks and projects matching re
             elif len(args) > 0:
                 m = re.compile('.*{0}.*'.format(' '.join(args)))
                 for task in self.tasks:
-                    p = task.get_pretty(m)
+                    p = task.get_pretty(m, no_color = Todo.no_colors)
                     if p: print p
 
             # list everything
             else:
                 for task in self.tasks:
-                    print('{0}'.format(task.get_pretty()))
+                    print('{0}'.format(
+                            task.get_pretty(no_color = Todo.no_colors)
+                            )
+                          )
 
         def projects(self, args):
             if not self.tasks:
@@ -103,7 +115,10 @@ class Todo:
 
             for task in self.tasks:
                 if isinstance(task, Project):
-                    print('{0}'.format(task.get_pretty_name()))
+                    print('{0}'.format(
+                            task.get_pretty_name(no_color = Todo.no_colors)
+                            )
+                          )
 
         def add(self, args):
             if len(args) < 1:
@@ -281,6 +296,20 @@ class Todo:
                 print fobj.read()
 
     def __init__(self, args):
+        self.no_colors = False
+
+        def parse_args_and_opts(args):
+            optionParser = OptionParser()
+
+            for opt in Todo.opts:
+                optionParser.add_option(*opt[4:],
+                                         help = opt[0],
+                                         action = opt[1],
+                                         dest = opt[2],
+                                         default = opt[3])
+
+            return optionParser.parse_args()
+
         if not os.path.exists(os.path.dirname(_todo_file)):
             os.mkdir(os.path.dirname(_todo_file))
 
@@ -288,9 +317,13 @@ class Todo:
             with file(_todo_file, 'w') as f: pass
 
         try:
+            opts, args = parse_args_and_opts(args)
+
+            setattr(Todo, 'no_colors', opts.no_colors)
+
             parserGenerator = TaskParserGenerator(_todo_file)
             tasks, last_index = parserGenerator.parse()
-
+            
             commandParser = CommandParser([ cmd[1] for cmd in Todo.cmds ])
             command, args_left = commandParser.parse(args)
 
