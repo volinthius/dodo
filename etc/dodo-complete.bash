@@ -1,9 +1,29 @@
 _dodo() {
     local current
-    COMPREPLY=()
-    current=`_get_cword`
+    local prev
 
-    COMPREPLY=($(compgen -W '$(dodo commands)' -- "$current"))
+    COMPREPLY=()
+
+    cur=`_get_cword`
+    prev=${COMP_WORDS[COMP_CWORD - 1]}
+
+    if [ $COMP_CWORD -gt 2 ]; then
+	return 0
+    fi
+
+    case "$prev" in
+	ls|add)
+	    COMPREPLY=($(compgen -W '$(dodo --no-colors projects)' -- "$cur"))
+	    ;;
+
+	archive|help|commands|do|dl|pri|projects|rm|version)
+	    ;;
+
+	*)
+	    COMPREPLY=($(compgen -W '$(dodo commands)' -- "$cur"))
+	    ;;
+    esac
+
 
     return 0
 }
