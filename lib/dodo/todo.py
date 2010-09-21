@@ -273,21 +273,37 @@ class Todo:
                 return True
 
         def help(self, args):
-            print('usage: {0} [COMMAND] [OPTS]'.format(tool_name))
+            print('usage: {0} [OPTS] [COMMAND] [ARGS]'.format(tool_name))
 
             cmd_width = max(map(len, [cmd[1] for cmd in Todo.cmds]))
-            opt_width = max(map(len, [' '.join(cmd[2:]) for cmd in Todo.cmds]))
+            arg_width = max(map(len, [' '.join(cmd[2:]) for cmd in Todo.cmds]))
+            opt_width = max(map(len, [opt[4] for opt in Todo.opts]))
+
+            print('\nOptions:')
+
+            for opt in Todo.opts:
+                print(
+                    '  {0:<{opt_width}}{1}'.format(
+                        opt[4],
+                        opt[0],
+                        opt_width = opt_width + 5,
+                        )
+                    )
+
+            print('\nCommands:')
 
             for cmd in Todo.cmds:
                 print(
-                    '  {0:<{cmd_width}}{1:<{opt_width}}{2}'.format(
+                    '  {0:<{cmd_width}}{1:<{arg_width}}{2}'.format(
                         cmd[1],
                         ' '.join(cmd[2:]),
                         cmd[0],
                         cmd_width = cmd_width + 5,
-                        opt_width = opt_width + 5,
+                        arg_width = arg_width + 5,
                         )
                     )
+
+            print('\nRunning dodo without any parameters list tasks.')
 
             sys.exit(0)
 
